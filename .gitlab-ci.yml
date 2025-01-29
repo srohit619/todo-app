@@ -1,0 +1,42 @@
+stages:
+  - build
+  - test
+  - deploy
+
+# Build Backend
+build-backend:
+  stage: build
+  image: node:18
+  script:
+    - cd backend
+    - npm install
+    - npm run build
+
+# Build Frontend
+build-frontend:
+  stage: build
+  image: node:18
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+
+# Test Backend
+test-backend:
+  stage: test
+  image: node:18
+  script:
+    - cd backend
+    - npm test
+
+# Deploy
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to production..."
+    - scp -r frontend/dist/* user@server:/var/www/html
+  only:
+    - main
